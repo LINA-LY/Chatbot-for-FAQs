@@ -4,74 +4,267 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FAQ Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-light: #EEF2FF;
+            --secondary-color: #10B981;
+            --text-color: #1F2937;
+            --light-text: #6B7280;
+            --background: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --border-color: #E5E7EB;
+            --user-message-bg: #EEF2FF;
+            --bot-message-bg: #FFFFFF;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--light-text);
+            font-size: 1.1rem;
+        }
+
         .chat-container {
-            height: 500px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 70vh;
+            max-height: 700px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
-            padding: 10px;
+            background-image: linear-gradient(to bottom, #f3f4f6 0%, #ffffff 100%);
+        }
+
+        .message {
             margin-bottom: 20px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .user-message, .bot-message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 10px;
-            max-width: 70%;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
         .user-message {
-            background-color: #DCF8C6;
             margin-left: auto;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+            padding: 12px 16px;
+            box-shadow: var(--shadow);
         }
+
         .bot-message {
-            background-color: #F0F0F0;
+            margin-right: auto;
+            background-color: var(--bot-message-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px 18px 18px 4px;
+            padding: 12px 16px;
+            box-shadow: var(--shadow);
         }
+
+        .message-header {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .bot-message .message-header {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .user-message .message-header {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
         .input-container {
             display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            background-color: white;
         }
+
         #user-input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 10px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
+
+        #user-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
         #send-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
+            margin-left: 10px;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 24px;
+            padding: 0 24px;
             cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            font-family: 'Poppins', sans-serif;
         }
+
         #send-button:hover {
-            background-color: #45a049;
+            background-color: #4338CA;
         }
-        .message-header {
-            font-weight: bold;
-            margin-bottom: 5px;
+
+        .typing-indicator {
+            display: none;
+            margin-right: auto;
+            background-color: var(--bot-message-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px 18px 18px 4px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            float: left;
+            margin: 0 1px;
+            background-color: var(--light-text);
+            display: block;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+
+        .typing-indicator span:nth-of-type(1) {
+            animation: 1s blink infinite 0.3333s;
+        }
+
+        .typing-indicator span:nth-of-type(2) {
+            animation: 1s blink infinite 0.6666s;
+        }
+
+        .typing-indicator span:nth-of-type(3) {
+            animation: 1s blink infinite 0.9999s;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 80vh;
+            }
+            .message {
+                max-width: 90%;
+            }
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-chip {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            background-color: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <h1>FAQ Chatbot</h1>
+    <header>
+        <h1>FAQ Assistant</h1>
+        <p>Ask me anything about our services</p>
+    </header>
     
-    <div class="chat-container" id="chat-container">
-        <div class="bot-message">
-            <div class="message-header">Bot:</div>
-            Hello! How can I help you today?
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-container">
+            <div class="message bot-message">
+                <div class="message-header">Assistant</div>
+                <div>Hello! How can I help you today?</div>
+            </div>
+            <div class="suggestions">
+                <div class="suggestion-chip">What services do you offer?</div>
+                <div class="suggestion-chip">Business hours</div>
+                <div class="suggestion-chip">Contact information</div>
+            </div>
         </div>
-    </div>
-    
-    <div class="input-container">
-        <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
-        <button id="send-button">Send</button>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
     </div>
 
     <script>
@@ -79,14 +272,16 @@
             const chatContainer = document.getElementById('chat-container');
             const userInput = document.getElementById('user-input');
             const sendButton = document.getElementById('send-button');
+            const typingIndicator = document.getElementById('typing-indicator');
+            const suggestionChips = document.querySelectorAll('.suggestion-chip');
 
             function addMessage(message, isUser) {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = isUser ? 'user-message' : 'bot-message';
+                messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
                 
                 const headerDiv = document.createElement('div');
                 headerDiv.className = 'message-header';
-                headerDiv.textContent = isUser ? 'You:' : 'Bot:';
+                headerDiv.textContent = isUser ? 'You' : 'Assistant';
                 
                 const contentDiv = document.createElement('div');
                 contentDiv.textContent = message;
@@ -98,15 +293,26 @@
                 // Scroll to bottom
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+            
+            function showTypingIndicator() {
+                typingIndicator.style.display = 'block';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function hideTypingIndicator() {
+                typingIndicator.style.display = 'none';
+            }
 
-            function sendMessage() {
-                const message = userInput.value.trim();
+            function sendMessage(message) {
                 if (message) {
                     // Add user message to chat
                     addMessage(message, true);
                     
                     // Clear input
                     userInput.value = '';
+                    
+                    // Show typing indicator
+                    showTypingIndicator();
                     
                     // Send message to backend
                     fetch('/chat', {
@@ -118,22 +324,38 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                        // Hide typing indicator
+                        hideTypingIndicator();
+                        
                         // Add bot response to chat
                         addMessage(data.response, false);
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        hideTypingIndicator();
                         addMessage('Sorry, there was an error processing your request.', false);
                     });
                 }
             }
 
             // Event listeners
-            sendButton.addEventListener('click', sendMessage);
+            sendButton.addEventListener('click', () => {
+                const message = userInput.value.trim();
+                sendMessage(message);
+            });
+            
             userInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
-                    sendMessage();
+                    const message = userInput.value.trim();
+                    sendMessage(message);
                 }
+            });
+            
+            // Add event listeners to suggestion chips
+            suggestionChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    sendMessage(chip.textContent);
+                });
             });
         });
     </script>
